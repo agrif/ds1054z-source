@@ -1,0 +1,27 @@
+[workspace]
+members = [".", "bobs"]
+
+[package]
+name = "ds1054z-source"
+version = "0.1.0"
+authors = ["Aaron Griffith <aargri@gmail.com>"]
+edition = "2018"
+
+[profile.release]
+lto = true
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+bobs = { path = "./bobs" }
+log = "0.4"
+smol = "0.4"
+smol-timeout = "0.4"
+
+[dependencies.ds1054z]
+git = "https://github.com/agrif/ds1054z"
+
+[dependencies.obs-sys]
+git = "https://github.com/bennetthardwick/rust-obs-plugins"
+rev = "952d2ba"

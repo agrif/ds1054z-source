@@ -1,0 +1,15 @@
+[package]
+name = "bobs"
+version = "0.1.0"
+authors = ["Aaron Griffith <aargri@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+bitflags = "1.2"
+cstr = "0.2"
+log = "0.4"
+log-panics = "2.0"
+
+[dependencies.obs-sys]
+git = "https://github.com/bennetthardwick/rust-obs-plugins"
+rev = "952d2ba"

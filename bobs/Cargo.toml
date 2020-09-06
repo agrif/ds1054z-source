@@ -8,7 +8,7 @@ edition = "2018"
 bitflags = "1.2"
 cstr = "0.2"
 log = "0.4"
-log-panics = "2.0"
+log-panics = { version = "2.0", features = ["with-backtrace"] }
 
 [dependencies.obs-sys]
 git = "https://github.com/bennetthardwick/rust-obs-plugins"

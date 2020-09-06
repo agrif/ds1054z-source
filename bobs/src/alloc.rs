@@ -10,7 +10,6 @@ unsafe fn alloc_helper<F, P>(layout: std::alloc::Layout, alloc: F) -> *mut u8
 where
     F: FnOnce(usize) -> *mut P,
 {
-    log::info!("allocating {:?}", layout);
     let p = alloc(layout.size() + layout.align()) as *mut u8;
     if p.is_null() {
         return p;
@@ -31,17 +30,14 @@ unsafe fn ptr_base<P>(p: *mut u8) -> *mut P {
 
 unsafe impl std::alloc::GlobalAlloc for ObsAllocator {
     unsafe fn alloc(&self, layout: std::alloc::Layout) -> *mut u8 {
-        log::info!("alloc: {:?}", layout);
         alloc_helper(layout, |s| obs_sys::bmalloc(s as obs_sys::size_t))
     }
 
     unsafe fn dealloc(&self, ptr: *mut u8, _layout: std::alloc::Layout) {
-        log::info!("dealloc: {:?}", ptr);
         obs_sys::bfree(ptr_base(ptr))
     }
 
     unsafe fn realloc(&self, ptr: *mut u8, layout: std::alloc::Layout, new_size: usize) -> *mut u8 {
-        log::info!("realloc: {:?} {:?} {:?}", ptr, layout, new_size);
         let newlayout = std::alloc::Layout::from_size_align_unchecked(new_size, layout.align());
         alloc_helper(newlayout, |s| {
             obs_sys::brealloc(ptr_base(ptr), s as obs_sys::size_t)

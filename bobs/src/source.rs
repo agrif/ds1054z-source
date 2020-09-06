@@ -115,7 +115,7 @@ impl<T> crate::Register for SourceInfo<T> {
     unsafe fn register(&mut self) {
         obs_sys::obs_register_source_s(
             &mut self.raw,
-            std::mem::size_of::<obs_sys::obs_source_info>() as u32,
+            std::mem::size_of::<obs_sys::obs_source_info>() as obs_sys::size_t,
         );
     }
 }

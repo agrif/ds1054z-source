@@ -1,33 +1,45 @@
 use crate::string::cstring;
+use crate::ObsRawBox;
 use std::ptr::NonNull;
 
 #[derive(Debug)]
-pub struct Properties(NonNull<obs_sys::obs_properties_t>);
+#[repr(C)]
+pub struct Properties(obs_sys::obs_properties_t);
+
+impl ObsRawBox for Properties {
+    type Raw = NonNull<obs_sys::obs_properties_t>;
+
+    unsafe fn from_raw(raw: Self::Raw) -> Box<Properties> {
+        Box::from_raw(std::mem::transmute(raw.as_ptr()))
+    }
+
+    unsafe fn as_raw(&self) -> Self::Raw {
+        (&self.0).into()
+    }
+}
+
+impl Drop for Properties {
+    fn drop(&mut self) {
+        unsafe {
+            obs_sys::obs_properties_destroy(self.as_raw().as_ptr());
+        }
+    }
+}
 
 impl Properties {
-    pub unsafe fn from_raw(raw: NonNull<obs_sys::obs_properties_t>) -> Self {
-        Properties(raw)
+    pub fn create() -> Box<Self> {
+        unsafe {
+            Self::from_raw(NonNull::new(obs_sys::obs_properties_create()).expect("pointer is null"))
+        }
     }
 
-    pub unsafe fn into_raw(self) -> NonNull<obs_sys::obs_properties_t> {
-        let raw = self.0;
-        std::mem::forget(self);
-        raw
-    }
-
-    pub fn create() -> Self {
-        Properties(unsafe {
-            NonNull::new(obs_sys::obs_properties_create()).expect("pointer is null")
-        })
-    }
-
-    pub fn add_bool(&mut self, name: &str, description: &str) -> Property {
+    pub fn add_bool(&mut self, name: &str, description: &str) -> Box<Property> {
         let cname = cstring(name);
         let cdesc = cstring(description);
         unsafe {
             Property::from_raw(
                 NonNull::new(obs_sys::obs_properties_add_bool(
-                    self.0.as_ptr(),
+                    self.as_raw().as_ptr(),
                     cname.as_ptr(),
                     cdesc.as_ptr(),
                 ))
@@ -36,13 +48,13 @@ impl Properties {
         }
     }
 
-    pub fn add_text(&mut self, name: &str, description: &str, type_: TextType) -> Property {
+    pub fn add_text(&mut self, name: &str, description: &str, type_: TextType) -> Box<Property> {
         let cname = cstring(name);
         let cdesc = cstring(description);
         unsafe {
             Property::from_raw(
                 NonNull::new(obs_sys::obs_properties_add_text(
-                    self.0.as_ptr(),
+                    self.as_raw().as_ptr(),
                     cname.as_ptr(),
                     cdesc.as_ptr(),
                     type_.into_raw(),
@@ -53,26 +65,19 @@ impl Properties {
     }
 }
 
-impl Drop for Properties {
-    fn drop(&mut self) {
-        unsafe {
-            obs_sys::obs_properties_destroy(self.0.as_ptr());
-        }
-    }
-}
-
 #[derive(Debug)]
-pub struct Property<'a>(&'a mut obs_sys::obs_property_t);
+#[repr(C)]
+pub struct Property(obs_sys::obs_property_t);
 
-impl<'a> Property<'a> {
-    pub unsafe fn from_raw(raw: NonNull<obs_sys::obs_property_t>) -> Self {
-        Property(&mut *raw.as_ptr())
+impl ObsRawBox for Property {
+    type Raw = NonNull<obs_sys::obs_property_t>;
+
+    unsafe fn from_raw(raw: Self::Raw) -> Box<Property> {
+        Box::from_raw(std::mem::transmute(raw.as_ptr()))
     }
 
-    pub unsafe fn into_raw(self) -> NonNull<obs_sys::obs_property_t> {
-        let raw = self.0.into();
-        std::mem::forget(self);
-        raw
+    unsafe fn as_raw(&self) -> Self::Raw {
+        (&self.0).into()
     }
 }
 

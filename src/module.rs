@@ -7,7 +7,7 @@ impl bobs::ModuleInfo for DS1054ZModule {
     const AUTHOR: &'static str = "Aaron Griffith <aargri@gmail.com>";
 
     fn load(r: &mut bobs::Registrar) -> Option<Self> {
-        use bobs::Source;
+        use bobs::SourceImpl;
         r.register(crate::source::ScopeSource::info());
         Some(DS1054ZModule)
     }

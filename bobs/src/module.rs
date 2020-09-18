@@ -42,6 +42,7 @@ macro_rules! declare_module {
             use ::std::option::Option;
             use ::std::option::Option::{None, Some};
             use ::std::os::raw::c_char;
+            use ::std::concat;
             use $crate::ModuleInfo;
 
             pub(super) static mut OBS_MODULE: Option<*mut ::obs_sys::obs_module_t> = None;

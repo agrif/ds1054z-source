@@ -24,7 +24,7 @@ enum Message {
     Update(Settings),
 }
 
-impl bobs::Source for ScopeSource {
+impl bobs::SourceImpl for ScopeSource {
     const ID: &'static str = "ds1054z";
     const NAME: &'static str = "Rigol DS1054Z";
     const ICON_TYPE: bobs::IconType = bobs::IconType::WindowCapture;
@@ -45,7 +45,7 @@ impl bobs::Source for ScopeSource {
         src
     }
 
-    fn get_properties(&mut self) -> bobs::Properties {
+    fn get_properties(&mut self) -> Box<bobs::Properties> {
         let mut props = bobs::Properties::create();
         props.add_text("address", "Oscilloscope address", bobs::TextType::Default);
         props.add_bool("blank", "Blank when disconnected.");
